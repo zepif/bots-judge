@@ -1,0 +1,74 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential clang-tidy lcov libgtest-dev
+
+    - name: Configure clang-tidy
+      run: |
+        echo 'Run clang-tidy with compile commands database'
+        echo 'Checks=cert-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,performance-*,portability-*,readability-*' > .clang-tidy
+    
+    - name: Build Google Test
+      run: |
+        sudo /usr/bin/yes | sudo /usr/bin/apt-get install cmake
+        cd /usr/src/googletest
+        sudo mkdir build
+        cd build
+        sudo cmake ..
+        sudo make
+        sudo cp -r googlemock/* /usr/lib/
+        sudo cp -r googletest/* /usr/lib/
+
+    - name: Build
+      run: |
+        cd src
+        make
+
+    - name: Run clang-tidy
+      run: |
+        cd src
+        make clang-tidy > clang-tidy.log
+        cat clang-tidy.log
+
+    - name: Run tests and collect coverage
+      run: |
+        make -C test run
+        gcov -o . *.cpp > coverage.txt
+        lcov --capture --directory . --output-file coverage.info
+        lcov --list coverage.info > coverage_report.txt
+        cat coverage_report.txt
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-report
+        path: coverage_report.txt
+
+    - name: Upload clang-tidy report
+      uses: actions/upload-artifact@v2
+      with:
+        name: clang-tidy-report
+        path: clang-tidy.log
+
+    - name: Run cpplint
+      run: |
+        pip install cpplint
+        cpplint --recursive . > cpplint_report.txt
+        cat cpplint_report.txt
+
+    - name: Upload cpplint report
+      uses: actions/upload-artifact@v2
+      with:
+        name: cpplint-report
+        path: cpplint_report.txt
