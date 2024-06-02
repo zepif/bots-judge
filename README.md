@@ -25,4 +25,4 @@ The program runs programs as child processes and ensures their interaction throu
 
 ## Usage
 
-For detailed usage instructions, see the [example](https://github.com/zepif/bots-judge/example/rsp).
+For detailed usage instructions, see the [example](https://github.com/zepif/bots-judge/tree/main/example/rsp).
