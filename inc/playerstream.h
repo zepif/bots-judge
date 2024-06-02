@@ -67,7 +67,7 @@ class playerstream_base {
 
 class iplayerstream : public virtual playerstream_base, public std::istream {
    public:
-    iplayerstream(int input_fd)
+    explicit iplayerstream(int input_fd)
         : playerstream_base(input_fd, -1),
           std::ios(&pbuf_),
           std::istream(&pbuf_) {}
@@ -75,7 +75,7 @@ class iplayerstream : public virtual playerstream_base, public std::istream {
 
 class oplayerstream : public virtual playerstream_base, public std::ostream {
    public:
-    oplayerstream(int output_fd)
+    explicit oplayerstream(int output_fd)
         : playerstream_base(-1, output_fd),
           std::ios(&pbuf_),
           std::ostream(&pbuf_) {}
@@ -85,7 +85,7 @@ class playerstream : public virtual playerstream_base,
                      public std::istream,
                      public std::ostream {
    public:
-    playerstream(int input_fd, int output_fd)
+    explicit playerstream(int input_fd, int output_fd)
         : playerstream_base(input_fd, output_fd),
           std::ios(&pbuf_),
           std::istream(&pbuf_),

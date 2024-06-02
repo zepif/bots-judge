@@ -10,6 +10,7 @@
 #include "err.h"
 
 #include <fcntl.h>
+#include <memory.h>
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -104,7 +105,8 @@ static vector<double> play_match(vector<string> programs, int battle_id) {
                                     O_WRONLY | O_CREAT | O_APPEND, 0640));
 
         pid_t child_pid;
-        unsigned seed = rand();
+        unsigned int seed_local = time(NULL);
+        unsigned seed = rand_r(&seed_local);
         switch ((child_pid = fork())) {
             case -1:
                 syserr("Error in fork\n");
@@ -162,7 +164,7 @@ static vector<double> play_match(vector<string> programs, int battle_id) {
 }
 
 template <class T>
-vector<T>& operator+=(vector<T>& v1, const vector<T>& v2) {
+vector<T> operator+=(vector<T>& v1, const vector<T>& v2) {
     for (size_t i = 0; i < std::min(v1.size(), v2.size()); i++) {
         v1[i] += v2[i];
     }

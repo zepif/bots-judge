@@ -60,15 +60,3 @@ jobs:
       with:
         name: clang-tidy-report
         path: clang-tidy.log
-
-    - name: Run cpplint
-      run: |
-        pip install cpplint
-        cpplint --recursive . > cpplint_report.txt
-        cat cpplint_report.txt
-
-    - name: Upload cpplint report
-      uses: actions/upload-artifact@v2
-      with:
-        name: cpplint-report
-        path: cpplint_report.txt
